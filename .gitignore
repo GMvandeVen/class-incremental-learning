@@ -1,0 +1,15 @@
+store/datasets/
+store/plots/
+store/results/
+store/models/gV*
+store/models/gC*
+store/models/dC*
+store/models/mM*
+
+.env
+__pycache__/
+.idea/
+
+docker/
+notebooks/
+venv/
