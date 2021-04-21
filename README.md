@@ -1,6 +1,6 @@
 # Class-Incremental Learning with Generative Classifiers
 A PyTorch implementation of the CVPRW-2021 paper "Class-Incremental Learning with Generative Classifiers"
-(a preprint version is available [here](...)).
+(a preprint version is available [here](https://arxiv.org/abs/2104.10093)).
 Besides an implementation of the VAE-based generative classifier explored in this paper, this repository also provides 
 implementations of all class-incremental learning mehods to which the generative classifier is compared
 (i.e., DGR, BI-R, EWC, SI, CWR, CWR+, AR1, the 'labels trick' & SLDA).
@@ -95,7 +95,7 @@ Please consider citing the accompanying paper if you use this code in your resea
 @article{vandeven2021class,
   title={Class-incremental learning with generative classifiers},
   author={van de Ven, Gido M and Li, Zhe and Tolias, Andreas S},
-  journal={arXiv preprint arXiv:...},
+  journal={arXiv preprint arXiv:2104.10093},
   year={2021}
 }
 ```
