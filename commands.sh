@@ -17,15 +17,15 @@
 
 # Run the generative classifier (--> last row of Table 2)
 ./compare_multiple.py --experiment=MNIST --iters=1000 --fc-units=85 --z-dim=5 --fc-layers=3 --eval-s=10000 --n-seeds=10 --seed=2
-./compare_multiple.py --experiment=CIFAR10 --iters=2500 --depth=3 --reducing-layers=3 --channels=15 --z-dim=100 --fc-layers=1 --n-seeds=10-eval-s=10000 --seed=2
+./compare_multiple.py --experiment=CIFAR10 --iters=2500 --depth=3 --reducing-layers=3 --channels=15 --z-dim=100 --fc-layers=1 --n-seeds=10 --eval-s=10000 --seed=2
 ./compare_multiple.py --experiment=CIFAR100 --iters=500 --hidden --pre-convE --fc-layers=2 --fc-units=85 --z-dim=20 --seed=2 --n-seeds=10 --eval-s=10000
 ./compare_multiple.py --experiment=CORe50 --single-epochs --z-dim=110 --fc-layers=1 --batch=1 --lr=0.0001 --eval-s=10000 --n-seeds=10 --seed=2
 
 # Run all methods compared against (--> rest of Table 2)
-./compare_all.py --experiment=MNIST --n-seeds=10 --seed=11 --c=1000 --lambda=1000000. --omega-max=0.01 --ar1-c=10 --dg-prop=0.
+./compare_all.py --experiment=MNIST --n-seeds=10 --seed=11 --c=1000 --lambda=1000000. --omega-max=0.01 --ar1-c=10
 ./compare_all.py --experiment=CIFAR10 --tasks=5 --n-seeds=10 --seed=11 --c=1 --lambda=10 --omega-max=0.1 --ar1-c=100 --conv-type=resNet --fc-layers=1 --iters=5000 --reducing-layers=3 --depth=5 --global-pooling --channels=20 --lr=0.001 --deconv-type=resNet --z-dim=100
-./compare_all.py --experiment=CIFAR100 --pre-convE --hidden --iters=5000 --n-seeds=10 --seed=11 --c=1. --lambda=100. --omega-max=0.01 --ar1-c=100 --dg-prop=0.6
-./compare_all.py --experiment=CIFAR100 --pre-convE --iters=5000 --n-seeds=10 --seed=11 --c=1. --lambda=100. --omega-max=10. --ar1-c=100
+./compare_all.py --experiment=CIFAR100 --pre-convE --hidden --iters=5000 --n-seeds=10 --seed=11 --c=1. --lambda=100. --omega-max=0.01 --ar1-c=100 --dg-prop=0.7 --bir-c=0.6 --si-dg-prop=100000000
+./compare_all.py --experiment=CIFAR100 --pre-convE --iters=5000 --n-seeds=10 --seed=11 --c=1. --lambda=100. --omega-max=10. --ar1-c=100 --no-bir
 ./compare_all.py --experiment=CORe50 --n-seeds=10 --seed=11 --single-epochs --batch=1 --fc-layers=2 --z-dim=200 --fc-units=1024 --lr=0.0001 --c=10 --lambda=10 --omega-max=0.1 --ar1-c=1. --dg-prop=0. --bir-c=0.01 --si-dg-prop=0.6
 
 # Visualization of samples from generative models underlying the generative classifier (--> Figure 2)

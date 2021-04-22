@@ -30,6 +30,7 @@ def handle_inputs():
     parser = options.add_options_for_param_search(parser, **kwargs)
     # Parse, process (i.e., set defaults for unselected options) and check chosen options
     parser.add_argument('--test-again', action='store_true', help='even if already run, test each method again')
+    parser.add_argument('--no-bir', action='store_true', help="don't run gridsearch for brain-inspired replay")
     args = parser.parse_args()
     options.set_defaults(args, set_hyper_params=False, **kwargs)
     options.check_for_errors(args, **kwargs)
@@ -130,7 +131,7 @@ if __name__ == '__main__':
     args.cwr_plus = False
 
     ## BI-R
-    if args.experiment in ("CIFAR100", "CORe50"):
+    if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         args.replay = "generative"
         args.feedback = True
         args.dg_gates = True
@@ -143,7 +144,7 @@ if __name__ == '__main__':
             BIR[dg_prop] = get_result(args)
 
     # BI-R + SI
-    if args.experiment in ("CIFAR100", "CORe50"):
+    if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         args.si = True
         args.omega_max = None
         BIRSI = {}
@@ -218,7 +219,7 @@ if __name__ == '__main__':
 
 
     ###---BI-R---###
-    if args.experiment in ("CIFAR100", "CORe50"):
+    if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         # -collect data
         ave_prec_bir = [BIR[dg_prop] for dg_prop in dg_prop_list]
         # -print on screen
@@ -227,7 +228,7 @@ if __name__ == '__main__':
         print("  {}".format(ave_prec_bir))
         print("---> dg_prop = {}     --    {}".format(dg_prop_list[np.argmax(ave_prec_bir)], np.max(ave_prec_bir)))
 
-    if args.experiment in ("CIFAR100", "CORe50"):
+    if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         print("\n\nBI-R + SI")
         print(" param-list (si_c): {}".format(ext_c_list))
         curr_max = 0

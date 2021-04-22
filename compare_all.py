@@ -24,6 +24,7 @@ def handle_inputs():
     # Parse chosen options
     parser.add_argument('--n-seeds', type=int, default=1, help='how often to repeat?')
     parser.add_argument('--test-again', action='store_true', help='even if already run, test each method again')
+    parser.add_argument('--no-bir', action='store_true', help="don't include brain-inspired replay")
     # -slda options
     parser.add_argument('--covariance', type=str, choices=["identity", "fixed", "streaming"], default="streaming",
                       help="what covariance matrix to use?")
@@ -183,7 +184,7 @@ if __name__ == '__main__':
     args.hidden = hidden_temp
 
     ## Brain-inspired replay
-    if args.experiment in ("CIFAR100", "CORe50"):
+    if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         args.replay = "generative"
         args.feedback = True
         args.dg_gates = True
@@ -194,7 +195,7 @@ if __name__ == '__main__':
         BIR = collect_all(BIR, seed_list, args, name="Brain-Inspired Replay")
 
     # BI-R + SI
-    if args.experiment in ("CIFAR100", "CORe50"):
+    if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         args.si = True
         args.si_c = args.bir_c
         args.omega_max = None
@@ -218,7 +219,7 @@ if __name__ == '__main__':
                          EWC[seed][i], SI[seed][i],
                          LABELS[seed][i], CWR[seed][i], CWRP[seed][i], AR1[seed][i],
                          SLDA[seed][i], GR[seed][i]]
-        if args.experiment in ("CIFAR100", "CORe50"):
+        if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
             prec_CI[seed].append(BIR[seed][i])
             prec_CI[seed].append(BIRSI[seed][i])
 
@@ -234,7 +235,7 @@ if __name__ == '__main__':
              "The 'labels trick'", "CWR", "CWR+", "AR1",
              "SLDA", "Generative Replay"]
     ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    if args.experiment in ("CIFAR100", "CORe50"):
+    if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         names.append("Brain-Inspired Replay")
         ids.append(10)
         names.append("BI-R + SI")
