@@ -264,18 +264,18 @@ def run(args, verbose=False):
 
         # Evaluate precision of final model on full test-set
         if verbose:
-            print("\n Precision on test-set:")
+            print("\n Accuracy of final model on test-set:")
         precs = []
         for i in range(config['classes']):
             prec = evaluate.validate(model, test_datasets[i], verbose=False, allowed_classes=None, S=args.eval_s,
                                      feature_extractor=feature_extractor,
                                      test_size=None if args.eval_n==0 else args.eval_n)
             if verbose:
-                print(" - Class {}: {:.4f}".format(i + 1, prec))
+                print(" - For class {}: {:.4f}".format(i + 1, prec))
             precs.append(prec)
         average_precs = sum(precs)/config['classes']
         if verbose:
-            print('=> Average precision over all {} classes: {:.4f}\n'.format(config['classes'], average_precs))
+            print('=> Average accuracy over all {} classes: {:.4f}\n'.format(config['classes'], average_precs))
         # -write out to text file
         output_file = open("{}/prec-{}--evalN{}-S{}.txt".format(args.r_dir, param_stamp, args.eval_n, args.eval_s), 'w')
         output_file.write('{}\n'.format(average_precs))
