@@ -262,23 +262,23 @@ def run(args, verbose=False):
         if verbose:
             print("\n\nEVALUATION RESULTS:")
 
-        # Evaluate precision of final model on full test-set
+        # Evaluate accuracy of final model on full test-set
         if verbose:
             print("\n Accuracy of final model on test-set:")
-        precs = []
+        accs = []
         for i in range(config['classes']):
-            prec = evaluate.validate(model, test_datasets[i], verbose=False, allowed_classes=None, S=args.eval_s,
+            acc = evaluate.validate(model, test_datasets[i], verbose=False, allowed_classes=None, S=args.eval_s,
                                      feature_extractor=feature_extractor,
                                      test_size=None if args.eval_n==0 else args.eval_n)
             if verbose:
-                print(" - For class {}: {:.4f}".format(i + 1, prec))
-            precs.append(prec)
-        average_precs = sum(precs)/config['classes']
+                print(" - For class {}: {:.4f}".format(i + 1, acc))
+            accs.append(acc)
+        average_accs = sum(accs)/config['classes']
         if verbose:
-            print('=> Average accuracy over all {} classes: {:.4f}\n'.format(config['classes'], average_precs))
+            print('=> Average accuracy over all {} classes: {:.4f}\n'.format(config['classes'], average_accs))
         # -write out to text file
-        output_file = open("{}/prec-{}--evalN{}-S{}.txt".format(args.r_dir, param_stamp, args.eval_n, args.eval_s), 'w')
-        output_file.write('{}\n'.format(average_precs))
+        output_file = open("{}/acc-{}--evalN{}-S{}.txt".format(args.r_dir, param_stamp, args.eval_n, args.eval_s), 'w')
+        output_file.write('{}\n'.format(average_accs))
         output_file.close()
 
 
@@ -324,20 +324,20 @@ def run(args, verbose=False):
 
         # Evaluate discriminative model
         if verbose:
-            print("\n Precision on test-set (discriminative model trained on generated samples, iters={}):".format(iters))
-        precs = []
+            print("\n Accuracy on test-set (discriminative model trained on generated samples, iters={}):".format(iters))
+        accs = []
         for i in range(config['classes']):
-            prec = evaluate.validate(cnn, test_datasets[i], verbose=False, feature_extractor=feature_extractor,
+            acc = evaluate.validate(cnn, test_datasets[i], verbose=False, feature_extractor=feature_extractor,
                                      allowed_classes=None, test_size=None)
             if verbose:
-                print(" - Class {}: {:.4f}".format(i + 1, prec))
-            precs.append(prec)
-        average_precs = sum(precs)/config['classes']
+                print(" - Class {}: {:.4f}".format(i + 1, acc))
+            accs.append(acc)
+        average_accs = sum(accs)/config['classes']
         if verbose:
-            print('=> Average precision over all {} classes: {:.4f}\n'.format(config['classes'], average_precs))
+            print('=> Average accuracy over all {} classes: {:.4f}\n'.format(config['classes'], average_accs))
         # -write out to text file
-        output_file = open("{}/precReplay-{}--i{}.txt".format(args.r_dir, param_stamp, iters), 'w')
-        output_file.write('{}\n'.format(average_precs))
+        output_file = open("{}/accReplay-{}--i{}.txt".format(args.r_dir, param_stamp, iters), 'w')
+        output_file.write('{}\n'.format(average_accs))
         output_file.close()
 
 

@@ -40,8 +40,8 @@ def get_results(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run, and if not do so
-    if os.path.isfile('{}/precTI-{}.txt'.format(args.r_dir, param_stamp)) and \
-            os.path.isfile('{}/precCI-{}.txt'.format(args.r_dir, param_stamp)):
+    if os.path.isfile('{}/accTI-{}.txt'.format(args.r_dir, param_stamp)) and \
+            os.path.isfile('{}/accCI-{}.txt'.format(args.r_dir, param_stamp)):
         if utils.checkattr(args, 'test_again'):
             print("\n ...testing: {} ...".format(param_stamp))
             args.train = True if utils.checkattr(args, 'slda') else False
@@ -52,12 +52,12 @@ def get_results(args):
         print("\n ...running: {} ...".format(param_stamp))
         args.train = True
         main_cl.run(args)
-    # -get average precisions
-    fileName = '{}/precTI-{}.txt'.format(args.r_dir, param_stamp)
+    # -get average accuracies
+    fileName = '{}/accTI-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave_ti = float(file.readline())
     file.close()
-    fileName = '{}/precCI-{}.txt'.format(args.r_dir, param_stamp)
+    fileName = '{}/accCI-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave_ci = float(file.readline())
     file.close()
@@ -210,18 +210,18 @@ if __name__ == '__main__':
     #----- COLLECT RESULTS -----#
     #---------------------------#
 
-    prec_CI = {}
+    acc_CI = {}
 
     ## For each seed, create list with average metrics
     for seed in seed_list:
         i = 1
-        prec_CI[seed] = [STANDARD[seed][i], JOINT[seed][i],
-                         EWC[seed][i], SI[seed][i],
-                         LABELS[seed][i], CWR[seed][i], CWRP[seed][i], AR1[seed][i],
-                         SLDA[seed][i], GR[seed][i]]
+        acc_CI[seed] = [STANDARD[seed][i], JOINT[seed][i],
+                        EWC[seed][i], SI[seed][i],
+                        LABELS[seed][i], CWR[seed][i], CWRP[seed][i], AR1[seed][i],
+                        SLDA[seed][i], GR[seed][i]]
         if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
-            prec_CI[seed].append(BIR[seed][i])
-            prec_CI[seed].append(BIRSI[seed][i])
+            acc_CI[seed].append(BIR[seed][i])
+            acc_CI[seed].append(BIRSI[seed][i])
 
     #-------------------------------------------------------------------------------------------------#
 
@@ -244,9 +244,9 @@ if __name__ == '__main__':
 
     # EVALUATION ACCORDING TO CLASS-INCREMENTAL SCENARIO
     # -calculate averages and SEMs
-    means = [np.mean([prec_CI[seed][id] for seed in seed_list]) for id in ids]
+    means = [np.mean([acc_CI[seed][id] for seed in seed_list]) for id in ids]
     if len(seed_list)>1:
-        sems = [np.sqrt(np.var([prec_CI[seed][id] for seed in seed_list])/(len(seed_list)-1)) for id in ids]
+        sems = [np.sqrt(np.var([acc_CI[seed][id] for seed in seed_list])/(len(seed_list)-1)) for id in ids]
 
     # -print results to screen
     classes = 100 if args.experiment=="CIFAR100" else 10

@@ -8,7 +8,7 @@ from . import evaluate
 #########################################################
 
 def _eval_cb(log, test_datasets, visdom=None, iters_per_task=None, test_size=None, classes_per_task=None):
-    '''Initiates function for evaluating performance of classifier (in terms of precision).
+    '''Initiates function for evaluating performance of classifier (in terms of accuracy).
 
     [test_datasets]     <list> of <Datasets>; also if only 1 task, it should be presented as a list!
     [classes_per_task]  <int> number of "active" classes per task'''
@@ -20,10 +20,10 @@ def _eval_cb(log, test_datasets, visdom=None, iters_per_task=None, test_size=Non
 
         # evaluate the solver on multiple tasks (and log to visdom)
         if iteration % log == 0:
-            evaluate.precision(classifier, test_datasets, task, iteration,
-                               classes_per_task=classes_per_task, test_size=test_size, visdom=visdom)
+            evaluate.test_accuracy(classifier, test_datasets, task, iteration,
+                                   classes_per_task=classes_per_task, test_size=test_size, visdom=visdom)
 
-    ## Return the callback-function (except if neither visdom or [precision_dict] is selected!)
+    ## Return the callback-function (except if visdom is not selected!)
     return eval_cb if (visdom is not None) else None
 
 
@@ -108,9 +108,9 @@ def _loss_cb(log=100, visdom=None, model=None, tasks=None, iters_per_task=None, 
                 task_stm = "" if (tasks is None) else " Task: {}/{} |".format(task, tasks)
             epoch_stm = "" if ((epochs is None) or (epoch is None)) else " Epoch: {}/{} |".format(epoch, epochs)
             bar.set_description(
-                ' <{model}> |{t_stm}{e_stm} training loss: {loss:.3} |{prec}'.format(
+                ' <{model}> |{t_stm}{e_stm} training loss: {loss:.3} |{acc}'.format(
                     model=name, t_stm=task_stm, e_stm=epoch_stm, loss=loss_dict['loss_total'],
-                    prec=" training precision: {:.3} |".format(loss_dict['precision']) if name=="CLASSIFIER" else ""
+                    acc=" training accuracy: {:.3} |".format(loss_dict['accuracy']) if name=="CLASSIFIER" else ""
                 )
             )
             bar.update(1)

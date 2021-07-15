@@ -30,7 +30,7 @@ def get_results(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args, gen_classifier=True)
     # -check whether already run, and if not do so
-    if os.path.isfile('{}/prec-{}--evalN{}-S{}.txt'.format(args.r_dir, param_stamp, args.eval_n, args.eval_s)):
+    if os.path.isfile('{}/acc-{}--evalN{}-S{}.txt'.format(args.r_dir, param_stamp, args.eval_n, args.eval_s)):
         print(" already run: {}".format(param_stamp))
     elif os.path.isfile("{}/gC-{}".format(args.m_dir, param_stamp)):
         print("\n ...testing: {} ...".format(param_stamp))
@@ -42,8 +42,8 @@ def get_results(args):
         args.train = True
         args.from_replay = False
         main_generative.run(args, verbose=True)
-    # -get average precisions
-    fileName = '{}/prec-{}--evalN{}-S{}.txt'.format(args.r_dir, param_stamp, args.eval_n, args.eval_s)
+    # -get average accuracies
+    fileName = '{}/acc-{}--evalN{}-S{}.txt'.format(args.r_dir, param_stamp, args.eval_n, args.eval_s)
     file = open(fileName)
     ave = float(file.readline())
     file.close()
@@ -90,12 +90,12 @@ if __name__ == '__main__':
     #----- COLLECT RESULTS -----#
     #---------------------------#
 
-    prec = {}
-    prec_replay = {}
+    acc = {}
+    acc_replay = {}
 
     ## For each seed, create list with average metrics
     for seed in seed_list:
-        prec[seed] = [GC[seed]]
+        acc[seed] = [GC[seed]]
 
 
 
@@ -111,9 +111,9 @@ if __name__ == '__main__':
 
     # EVALUATION OF GENERATIVE CLASSIFIER
     # -calculate averages and SEMs
-    means = [np.mean([prec[seed][id] for seed in seed_list]) for id in ids]
+    means = [np.mean([acc[seed][id] for seed in seed_list]) for id in ids]
     if len(seed_list)>1:
-        sems = [np.sqrt(np.var([prec[seed][id] for seed in seed_list])/(len(seed_list)-1)) for id in ids]
+        sems = [np.sqrt(np.var([acc[seed][id] for seed in seed_list])/(len(seed_list)-1)) for id in ids]
 
     # -print results to screen
     classes = 10 if args.experiment in ("MNIST", "CORe50-category") else 100

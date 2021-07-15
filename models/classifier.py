@@ -176,8 +176,8 @@ class Classifier(ContinualLearner):
         pred_loss = F.cross_entropy(input=y_hat, target=y, reduction='mean')
         loss_cur = pred_loss
 
-        # Calculate training-precision
-        precision = None if y is None else (y == y_hat.max(1)[1]).sum().item() / x.size(0)
+        # Calculate training-accuracy
+        accuracy = None if y is None else (y == y_hat.max(1)[1]).sum().item() / x.size(0)
 
 
         ##-- REPLAYED DATA --##
@@ -235,6 +235,6 @@ class Classifier(ContinualLearner):
             'pred': pred_loss.item(),
             'ewc': ewc_loss.item(),
             'si_loss': surrogate_loss.item(),
-            'precision': precision if precision is not None else 0.,
+            'accuracy': accuracy if accuracy is not None else 0.,
         }
 

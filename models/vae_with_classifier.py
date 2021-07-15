@@ -741,10 +741,10 @@ class AutoEncoder(ContinualLearner):
         # Weigh losses as requested
         loss_cur = reconL + variatL + self.lamda_pl * predL
 
-        # Calculate training-precision
+        # Calculate training-accuracy
         if y is not None and y_hat is not None:
             _, predicted = y_hat.max(1)
-            precision = (y == predicted).sum().item() / x.size(0)
+            accuracy = (y == predicted).sum().item() / x.size(0)
 
 
         ##-- REPLAYED DATA --##
@@ -816,7 +816,7 @@ class AutoEncoder(ContinualLearner):
             'pred': predL.item(),
             'ewc': ewc_loss.item(),
             'si_loss': surrogate_loss.item(),
-            'precision': precision if precision is not None else 0.,
+            'accuracy': accuracy if accuracy is not None else 0.,
             'recon': reconL.item() if x is not None else 0,
             'variat': variatL.item() if x is not None else 0,
         }

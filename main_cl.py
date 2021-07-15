@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 import numpy as np
-import pandas as pd
 import os
 import torch
 from torch import optim
-from torch.utils.data import ConcatDataset, TensorDataset
+from torch.utils.data import TensorDataset
 
 # -custom-written libraries
 import options
@@ -349,15 +348,16 @@ def run(args, verbose=False):
     ] if generator is not None else [None]
 
     # Callbacks for reporting and visualizing accuracy
-    # -visdom (i.e., after each [prec_log]
+    # -visdom (i.e., after each [acc_log]
     eval_cbs = [
-        cb._eval_cb(log=args.prec_log, test_datasets=test_datasets, visdom=visdom,
-                    iters_per_task=args.iters, test_size=args.prec_n, classes_per_task=classes_per_task)
+        cb._eval_cb(log=args.acc_log, test_datasets=test_datasets, visdom=visdom,
+                    iters_per_task=args.iters, test_size=args.acc_n, classes_per_task=classes_per_task)
     ] if utils.checkattr(args, 'visdom') else [None]
 
     # Callbacks for plotting generated samples
     sample_log = args.sample_log if (hasattr(args, 'sample_log') and args.sample_log is not None) else args.iters
-    no_samples = (utils.checkattr(args, "no_samples") or utils.checkattr(args, 'hidden')) or (not utils.checkattr(args, 'visdom'))
+    no_samples = (utils.checkattr(args, "no_samples") or utils.checkattr(args, 'hidden')) \
+                 or (not utils.checkattr(args, 'visdom'))
     sample_cbs = [
         cb._sample_cb(log=sample_log, visdom=visdom, config=config, sample_size=args.sample_n)
     ] if (generator is not None) and not no_samples else [None]
@@ -417,26 +417,26 @@ def run(args, verbose=False):
     if verbose:
         print("\n\nEVALUATION RESULTS:")
 
-    # Evaluate precision of final model on full test-set
+    # Evaluate accuracy of final model on full test-set
     ##--> Task-IL
-    precs_ti = []
+    accs_ti = []
     for i in range(args.tasks):
-        prec = evaluate.validate(model, test_datasets[i], verbose=False, test_size=None,
+        acc = evaluate.validate(model, test_datasets[i], verbose=False, test_size=None,
                                  allowed_classes=list(range(classes_per_task*i, classes_per_task*(i+1))), S=10)
-        precs_ti.append(prec)
-    average_precs_ti = sum(precs_ti) / args.tasks
+        accs_ti.append(acc)
+    average_accs_ti = sum(accs_ti) / args.tasks
     ##--> Class-IL
     if verbose:
         print("\n Accuracy of final model on test-set:")
-    precs_ci = []
+    accs_ci = []
     for i in range(args.tasks):
-        prec = evaluate.validate(model, test_datasets[i], verbose=False, allowed_classes=None, S=10, test_size=None)
+        acc = evaluate.validate(model, test_datasets[i], verbose=False, allowed_classes=None, S=10, test_size=None)
         if verbose:
-            print(" - For classes from task {}: {:.4f}".format(i + 1, prec))
-        precs_ci.append(prec)
-    average_precs_ci = sum(precs_ci)/args.tasks
+            print(" - For classes from task {}: {:.4f}".format(i + 1, acc))
+        accs_ci.append(acc)
+    average_accs_ci = sum(accs_ci)/args.tasks
     if verbose:
-        print('=> Average accuracy over all {} classes: {:.4f}\n'.format(args.tasks*classes_per_task, average_precs_ci))
+        print('=> Average accuracy over all {} classes: {:.4f}\n'.format(args.tasks*classes_per_task, average_accs_ci))
 
     #-------------------------------------------------------------------------------------------------#
 
@@ -444,12 +444,12 @@ def run(args, verbose=False):
     #----- OUTPUT -----#
     #------------------#
 
-    # Average precision on full test set
-    output_file = open("{}/precTI-{}.txt".format(args.r_dir, param_stamp), 'w')
-    output_file.write('{}\n'.format(average_precs_ti))
+    # Average accuracy on full test set
+    output_file = open("{}/accTI-{}.txt".format(args.r_dir, param_stamp), 'w')
+    output_file.write('{}\n'.format(average_accs_ti))
     output_file.close()
-    output_file = open("{}/precCI-{}.txt".format(args.r_dir, param_stamp), 'w')
-    output_file.write('{}\n'.format(average_precs_ci))
+    output_file = open("{}/accCI-{}.txt".format(args.r_dir, param_stamp), 'w')
+    output_file.write('{}\n'.format(average_accs_ci))
     output_file.close()
     # -metrics-dict
     if utils.checkattr(args, 'metrics') and args.train:

@@ -41,7 +41,7 @@ def get_result(args):
     # -get param-stamp
     param_stamp = get_param_stamp_from_args(args)
     # -check whether already run, and if not do so
-    if os.path.isfile('{}/precCI-{}.txt'.format(args.r_dir, param_stamp)):
+    if os.path.isfile('{}/accCI-{}.txt'.format(args.r_dir, param_stamp)):
         if utils.checkattr(args, 'test_again'):
             print("\n ...testing: {} ...".format(param_stamp))
             args.train = False
@@ -52,8 +52,8 @@ def get_result(args):
         print("\n ...running: {} ...".format(param_stamp))
         args.train = True
         main_cl.run(args)
-    # -get average precision
-    fileName = '{}/precCI-{}.txt'.format(args.r_dir, param_stamp)
+    # -get average accuracies
+    fileName = '{}/accCI-{}.txt'.format(args.r_dir, param_stamp)
     file = open(fileName)
     ave = float(file.readline())
     file.close()
@@ -169,22 +169,22 @@ if __name__ == '__main__':
 
     ###---SI---###
     # -collect data
-    ave_prec_si = [NONE] + [SI[c] for c in c_list]
+    ave_acc_si = [NONE] + [SI[c] for c in c_list]
     # -print on screen
     print("\n\nSYNAPTIC INTELLIGENCE (SI)")
     print(" param list (si_c): {}".format(ext_c_list))
-    print("  {}".format(ave_prec_si))
-    print("---> si_c = {}     --    {}".format(ext_c_list[np.argmax(ave_prec_si)], np.max(ave_prec_si)))
+    print("  {}".format(ave_acc_si))
+    print("---> si_c = {}     --    {}".format(ext_c_list[np.argmax(ave_acc_si)], np.max(ave_acc_si)))
 
 
     ###---EWC---###
     # -collect data
-    ave_prec_ewc = [NONE] + [EWC[ewc_lambda] for ewc_lambda in lambda_list]
+    ave_acc_ewc = [NONE] + [EWC[ewc_lambda] for ewc_lambda in lambda_list]
     # -print on screen
     print("\n\nELASTIC WEIGHT CONSOLIDATION (EWC)")
     print(" param list (ewc_lambda): {}".format(ext_lambda_list))
-    print("  {}".format(ave_prec_ewc))
-    print("---> ewc_lambda = {}     --    {}".format(ext_lambda_list[np.argmax(ave_prec_ewc)], np.max(ave_prec_ewc)))
+    print("  {}".format(ave_acc_ewc))
+    print("---> ewc_lambda = {}     --    {}".format(ext_lambda_list[np.argmax(ave_acc_ewc)], np.max(ave_acc_ewc)))
 
 
     ###---CWR---###
@@ -199,45 +199,45 @@ if __name__ == '__main__':
 
     ###---AR1---###
     # -collect data
-    ave_prec_per_omega = []
+    ave_acc_per_omega = []
     for omega_max in omega_max_list:
-        ave_prec_temp = [AR1_NOSI] + [AR1[omega_max][si_c] for si_c in c_list]
-        ave_prec_per_omega.append(ave_prec_temp)
+        ave_acc_temp = [AR1_NOSI] + [AR1[omega_max][si_c] for si_c in c_list]
+        ave_acc_per_omega.append(ave_acc_temp)
     # -print on screen
     if len(omega_max_list) > 0:
         print("\n\nAR1")
         print(" param-list (si_c): {}".format(ext_c_list))
         curr_max = 0
         for omega_max in omega_max_list:
-            ave_prec_temp = [AR1_NOSI] + [AR1[omega_max][si_c] for si_c in c_list]
-            print("  (omega_max={}):   {}".format(omega_max, ave_prec_temp))
-            if np.max(ave_prec_temp) > curr_max:
+            ave_acc_temp = [AR1_NOSI] + [AR1[omega_max][si_c] for si_c in c_list]
+            print("  (omega_max={}):   {}".format(omega_max, ave_acc_temp))
+            if np.max(ave_acc_temp) > curr_max:
                 omega_max_max = omega_max
-                c_max = ext_c_list[np.argmax(ave_prec_temp)]
-                curr_max = np.max(ave_prec_temp)
+                c_max = ext_c_list[np.argmax(ave_acc_temp)]
+                curr_max = np.max(ave_acc_temp)
         print("--->  omega_max = {}  -  si_c = {}     --    {}".format(omega_max_max, c_max, curr_max))
 
 
     ###---BI-R---###
     if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         # -collect data
-        ave_prec_bir = [BIR[dg_prop] for dg_prop in dg_prop_list]
+        ave_acc_bir = [BIR[dg_prop] for dg_prop in dg_prop_list]
         # -print on screen
         print("\n\nBRAIN-INSPIRED REPLAY (BI-R)")
         print(" param list (dg_prop): {}".format(dg_prop_list))
-        print("  {}".format(ave_prec_bir))
-        print("---> dg_prop = {}     --    {}".format(dg_prop_list[np.argmax(ave_prec_bir)], np.max(ave_prec_bir)))
+        print("  {}".format(ave_acc_bir))
+        print("---> dg_prop = {}     --    {}".format(dg_prop_list[np.argmax(ave_acc_bir)], np.max(ave_acc_bir)))
 
     if args.experiment in ("CIFAR100", "CORe50") and not utils.checkattr(args, 'no_bir'):
         print("\n\nBI-R + SI")
         print(" param-list (si_c): {}".format(ext_c_list))
         curr_max = 0
         for dg_prop in dg_prop_si_list:
-            ave_prec_temp = [BIR[dg_prop]] + [BIRSI[dg_prop][si_c] for si_c in c_list]
-            print("  (dg_prop={}):   {}".format(dg_prop, ave_prec_temp))
-            if np.max(ave_prec_temp) > curr_max:
+            ave_acc_temp = [BIR[dg_prop]] + [BIRSI[dg_prop][si_c] for si_c in c_list]
+            print("  (dg_prop={}):   {}".format(dg_prop, ave_acc_temp))
+            if np.max(ave_acc_temp) > curr_max:
                 dg_prop_max = dg_prop
-                c_max = ext_c_list[np.argmax(ave_prec_temp)]
-                curr_max = np.max(ave_prec_temp)
+                c_max = ext_c_list[np.argmax(ave_acc_temp)]
+                curr_max = np.max(ave_acc_temp)
         print("--->  dg_prop = {}  -  si_c = {}     --    {}".format(dg_prop_max, c_max, curr_max))
 

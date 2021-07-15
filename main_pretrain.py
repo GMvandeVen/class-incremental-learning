@@ -119,12 +119,12 @@ def run(args):
     #---------------------#
 
     # Determine after how many iterations to evaluate the model
-    eval_log = args.prec_log if (args.prec_log is not None) else len(train_loader)
+    eval_log = args.acc_log if (args.acc_log is not None) else len(train_loader)
 
     # Define callback-functions to evaluate during training
     # -loss
     loss_cbs = [cb._loss_cb(log=args.loss_log, visdom=visdom, epochs=epochs)]
-    # -precision
+    # -accuracy
     eval_cb = cb._eval_cb(log=eval_log, test_datasets=[testset], visdom=visdom)
 
 
@@ -173,9 +173,9 @@ def run(args):
 
     print("\n\nEVALUATION:")
 
-    # Evaluate precision of final model on full test-set
-    precs = evaluate.validate(cnn, testset, verbose=False, test_size=None, allowed_classes=None)
-    print('=> Average precision : {:.4f}\n'.format(precs))
+    # Evaluate accuracy of final model on full test-set
+    accs = evaluate.validate(cnn, testset, verbose=False, test_size=None, allowed_classes=None)
+    print('=> Average accuracy : {:.4f}\n'.format(accs))
 
 
     #-------------------------------------------------------------------------------------------------#

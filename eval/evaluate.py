@@ -13,7 +13,7 @@ import utils
 
 def validate(model, dataset, feature_extractor=None, batch_size=128, test_size=1024, verbose=True,
              allowed_classes=None, S=50):
-    '''Evaluate precision (= accuracy or proportion correct) of a classifier ([model]) on [dataset].
+    '''Evaluate the accuracy (= proportion of samples classified correctly) of a classifier ([model]) on [dataset].
 
     [allowed_classes]   None or <list> containing all "active classes" between which should be chosen
                             (these "active classes" are assumed to be contiguous)'''
@@ -58,17 +58,17 @@ def validate(model, dataset, feature_extractor=None, batch_size=128, test_size=1
         else:
             total_correct += (predicted == y).sum().item()
             total_tested += len(x)
-    precision = total_correct / total_tested
+    accuracy = total_correct / total_tested
 
     # Print result on screen (if requested) and return it
     if verbose:
-        print('=> Averge precision: {:.4f}'.format(precision))
-    return precision
+        print('=> Averge accuracy: {:.4f}'.format(accuracy))
+    return accuracy
 
 
-def precision(model, datasets, current_task, iteration, classes_per_task=None,
-              test_size=None, visdom=None, verbose=False, summary_graph=True):
-    '''Evaluate precision of a classifier (=[model]) on all tasks so far (= up to [current_task]) using [datasets].
+def test_accuracy(model, datasets, current_task, iteration, classes_per_task=None,
+                  test_size=None, visdom=None, verbose=False, summary_graph=True):
+    '''Evaluate accuracy of a classifier (=[model]) on all tasks so far (= up to [current_task]) using [datasets].
 
     [classes_per_task]  <int> number of active classes er task
     [visdom]            None or <dict> with name of "graph" and "env" (if None, no visdom-plots are made)'''
@@ -76,53 +76,53 @@ def precision(model, datasets, current_task, iteration, classes_per_task=None,
     n_tasks = len(datasets)
 
     # Evaluate accuracy of model predictions for all tasks so far (reporting "0" for future tasks)
-    precs_taskIL = []
-    precs_classIL = []
+    accs_taskIL = []
+    accs_classIL = []
     for i in range(n_tasks):
         if (current_task is None) or (i+1 <= current_task):
             # -evaluate according to Task-IL scenario
             allowed_classes = list(range(classes_per_task * i, classes_per_task * (i + 1)))
-            precs_taskIL.append(validate(model, datasets[i], test_size=test_size, verbose=verbose,
+            accs_taskIL.append(validate(model, datasets[i], test_size=test_size, verbose=verbose,
                                          allowed_classes=allowed_classes))
             # -evaluate according to Class-IL scenario
             allowed_classes = None if current_task is None else list(range(classes_per_task * current_task))
-            precs_classIL.append(validate(model, datasets[i], test_size=test_size, verbose=verbose,
+            accs_classIL.append(validate(model, datasets[i], test_size=test_size, verbose=verbose,
                                           allowed_classes=allowed_classes))
         else:
-            precs_taskIL.append(0)
-            precs_classIL.append(0)
+            accs_taskIL.append(0)
+            accs_classIL.append(0)
     if current_task is None:
-        average_precs_taskIL = sum([precs_taskIL[task_id] for task_id in range(n_tasks)]) / n_tasks
-        average_precs_classIL = sum([precs_classIL[task_id] for task_id in range(n_tasks)]) / n_tasks
+        average_accs_taskIL = sum([accs_taskIL[task_id] for task_id in range(n_tasks)]) / n_tasks
+        average_accs_classIL = sum([accs_classIL[task_id] for task_id in range(n_tasks)]) / n_tasks
     else:
-        average_precs_taskIL = sum([precs_taskIL[task_id] for task_id in range(current_task)]) / current_task
-        average_precs_classIL = sum([precs_classIL[task_id] for task_id in range(current_task)]) / current_task
+        average_accs_taskIL = sum([accs_taskIL[task_id] for task_id in range(current_task)]) / current_task
+        average_accs_classIL = sum([accs_classIL[task_id] for task_id in range(current_task)]) / current_task
 
     # Print results on screen
     if verbose:
-        print(' => ave precision (Task-IL):  {:.3f}'.format(average_precs_taskIL))
-        print(' => ave precision (Class-IL): {:.3f}'.format(average_precs_classIL))
+        print(' => ave accuracy (Task-IL):  {:.3f}'.format(average_accs_taskIL))
+        print(' => ave accuracy (Class-IL): {:.3f}'.format(average_accs_classIL))
 
     # Send results to visdom server
     names = ['task {}'.format(i + 1) for i in range(n_tasks)]
     if visdom is not None:
         visual.visdom.visualize_scalars(
-            precs_taskIL, names=names, title="prec Task-IL ({})".format(visdom["graph"]),
-            iteration=iteration, env=visdom["env"], ylabel="test precision"
+            accs_taskIL, names=names, title="acc Task-IL ({})".format(visdom["graph"]),
+            iteration=iteration, env=visdom["env"], ylabel="test accuracy"
         )
         if n_tasks>1 and summary_graph:
             visual.visdom.visualize_scalars(
-                [average_precs_taskIL], names=["ave"], title="ave prec Task-IL ({})".format(visdom["graph"]),
-                iteration=iteration, env=visdom["env"], ylabel="test precision"
+                [average_accs_taskIL], names=["ave"], title="ave acc Task-IL ({})".format(visdom["graph"]),
+                iteration=iteration, env=visdom["env"], ylabel="test accuracy"
             )
         visual.visdom.visualize_scalars(
-            precs_classIL, names=names, title="prec Class-IL ({})".format(visdom["graph"]),
-            iteration=iteration, env=visdom["env"], ylabel="test precision"
+            accs_classIL, names=names, title="acc Class-IL ({})".format(visdom["graph"]),
+            iteration=iteration, env=visdom["env"], ylabel="test accuracy"
         )
         if n_tasks>1 and summary_graph:
             visual.visdom.visualize_scalars(
-                [average_precs_classIL], names=["ave"], title="ave prec Class-IL ({})".format(visdom["graph"]),
-                iteration=iteration, env=visdom["env"], ylabel="test precision"
+                [average_accs_classIL], names=["ave"], title="ave acc Class-IL ({})".format(visdom["graph"]),
+                iteration=iteration, env=visdom["env"], ylabel="test accuracy"
             )
 
 
@@ -154,38 +154,36 @@ def initiate_metrics_dict(n_tasks):
 
 
 def intial_accuracy(model, datasets, metrics_dict, classes_per_task=None, test_size=None, verbose=False):
-    '''Evaluate precision of a classifier (=[model]) on all tasks using [datasets] before any learning.'''
+    '''Evaluate accuracy of a classifier (=[model]) on all tasks using [datasets] before any learning.'''
 
     n_tasks = len(datasets)
 
-    precs_all_classes = []
-    precs_only_classes_in_task = []
-    precs_all_classes_upto_task = []
+    accs_all_classes = []
+    accs_only_classes_in_task = []
+    accs_all_classes_upto_task = []
 
     for i in range(n_tasks):
         # -all classes
-        precision = validate(model, datasets[i], test_size=test_size, verbose=verbose, allowed_classes=None)
-        precs_all_classes.append(precision)
+        accuracy = validate(model, datasets[i], test_size=test_size, verbose=verbose, allowed_classes=None)
+        accs_all_classes.append(accuracy)
         # -only classes in task
         allowed_classes = list(range(classes_per_task * i, classes_per_task * (i + 1)))
-        precision = validate(model, datasets[i], test_size=test_size, verbose=verbose,
-                             allowed_classes=allowed_classes)
-        precs_only_classes_in_task.append(precision)
+        accuracy = validate(model, datasets[i], test_size=test_size, verbose=verbose, allowed_classes=allowed_classes)
+        accs_only_classes_in_task.append(accuracy)
         # -classes up to evaluated task
         allowed_classes = list(range(classes_per_task * (i + 1)))
-        precision = validate(model, datasets[i], test_size=test_size, verbose=verbose,
-                             allowed_classes=allowed_classes)
-        precs_all_classes_upto_task.append(precision)
+        accuracy = validate(model, datasets[i], test_size=test_size, verbose=verbose, allowed_classes=allowed_classes)
+        accs_all_classes_upto_task.append(accuracy)
 
-    metrics_dict["initial acc per task (all classes)"] = precs_all_classes
-    metrics_dict["initial acc per task (only classes in task)"] = precs_only_classes_in_task
-    metrics_dict["initial acc per task (all classes up to evaluated task)"] = precs_all_classes_upto_task
+    metrics_dict["initial acc per task (all classes)"] = accs_all_classes
+    metrics_dict["initial acc per task (only classes in task)"] = accs_only_classes_in_task
+    metrics_dict["initial acc per task (all classes up to evaluated task)"] = accs_all_classes_upto_task
     return metrics_dict
 
 
 def metric_statistics(model, datasets, current_task, iteration, classes_per_task=None, metrics_dict=None,
                       test_size=None, verbose=False):
-    '''Evaluate precision of a classifier (=[model]) on all tasks so far (= up to [current_task]) using [datasets].
+    '''Evaluate accuracy of a classifier (=[model]) on all tasks so far (= up to [current_task]) using [datasets].
 
     [metrics_dict]      None or <dict> of all measures to keep track of, to which results will be appended to
     [classes_per_task]  <int> number of active classes er task'''
@@ -193,57 +191,54 @@ def metric_statistics(model, datasets, current_task, iteration, classes_per_task
     n_tasks = len(datasets)
 
     # Calculate accurcies per task in various ways
-    precs_all_classes = []
-    precs_all_classes_so_far = []
-    precs_only_classes_in_task = []
-    precs_all_classes_upto_task = []
+    accs_all_classes = []
+    accs_all_classes_so_far = []
+    accs_only_classes_in_task = []
+    accs_all_classes_upto_task = []
     for i in range(n_tasks):
         # -all classes
-        precision = validate(
+        accuracy = validate(
             model, datasets[i], test_size=test_size, verbose=verbose, allowed_classes=None,
         )
-        precs_all_classes.append(precision)
+        accs_all_classes.append(accuracy)
         # -all classes up to trained task
         allowed_classes = list(range(classes_per_task * current_task))
-        precision = validate(model, datasets[i], test_size=test_size, verbose=verbose,
-                             allowed_classes=allowed_classes)
-        precs_all_classes_so_far.append(precision)
+        accuracy = validate(model, datasets[i], test_size=test_size, verbose=verbose, allowed_classes=allowed_classes)
+        accs_all_classes_so_far.append(accuracy)
         # -all classes up to evaluated task
         allowed_classes = list(range(classes_per_task * (i+1)))
-        precision = validate(model, datasets[i], test_size=test_size, verbose=verbose,
-                             allowed_classes=allowed_classes)
-        precs_all_classes_upto_task.append(precision)
+        accuracy = validate(model, datasets[i], test_size=test_size, verbose=verbose, allowed_classes=allowed_classes)
+        accs_all_classes_upto_task.append(accuracy)
         # -only classes in that task
         allowed_classes = list(range(classes_per_task * i, classes_per_task * (i + 1)))
-        precision = validate(model, datasets[i], test_size=test_size, verbose=verbose,
-                             allowed_classes=allowed_classes)
-        precs_only_classes_in_task.append(precision)
+        accuracy = validate(model, datasets[i], test_size=test_size, verbose=verbose, allowed_classes=allowed_classes)
+        accs_only_classes_in_task.append(accuracy)
 
     # Calcualte average accuracy over all tasks thus far
-    average_precsTIL = sum([precs_only_classes_in_task[task_id] for task_id in range(current_task)]) / current_task
-    average_precsCIL = sum([precs_all_classes_so_far[task_id] for task_id in range(current_task)]) / current_task
+    average_accsTIL = sum([accs_only_classes_in_task[task_id] for task_id in range(current_task)]) / current_task
+    average_accsCIL = sum([accs_all_classes_so_far[task_id] for task_id in range(current_task)]) / current_task
 
     # Append results to [metrics_dict]-dictionary
     for task_id in range(n_tasks):
-        metrics_dict["acc per task (all classes)"]["task {}".format(task_id+1)].append(precs_all_classes[task_id])
+        metrics_dict["acc per task (all classes)"]["task {}".format(task_id+1)].append(accs_all_classes[task_id])
         metrics_dict["acc per task (all classes up to trained task)"]["task {}".format(task_id+1)].append(
-            precs_all_classes_so_far[task_id]
+            accs_all_classes_so_far[task_id]
         )
         metrics_dict["acc per task (all classes up to evaluated task)"]["task {}".format(task_id+1)].append(
-            precs_all_classes_upto_task[task_id]
+            accs_all_classes_upto_task[task_id]
         )
         metrics_dict["acc per task (only classes in task)"]["task {}".format(task_id+1)].append(
-            precs_only_classes_in_task[task_id]
+            accs_only_classes_in_task[task_id]
         )
-    metrics_dict["average_TaskIL"].append(average_precsTIL)
-    metrics_dict["average_ClassIL"].append(average_precsCIL)
+    metrics_dict["average_TaskIL"].append(average_accsTIL)
+    metrics_dict["average_ClassIL"].append(average_accsCIL)
     metrics_dict["x_iteration"].append(iteration)
     metrics_dict["x_task"].append(current_task)
 
     # Print results on screen
     if verbose:
-        print(' => ave precision (Task-IL):  {:.3f}'.format(average_precsTIL))
-        print(' => ave precision (Class-IL): {:.3f}'.format(average_precsCIL))
+        print(' => ave accuracy (Task-IL):  {:.3f}'.format(average_accsTIL))
+        print(' => ave accuracy (Class-IL): {:.3f}'.format(average_accsCIL))
 
     return metrics_dict
 

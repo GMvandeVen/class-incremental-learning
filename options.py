@@ -48,9 +48,9 @@ def add_eval_options(parser, single_task=False, generative=False, **kwargs):
         eval.add_argument('--sample-log', type=int, metavar="N", help="# iters after which to plot samples")
         eval.add_argument('--sample-n', type=int, default=64, help="# images to show")
         eval.add_argument('--no-samples', action='store_true', help="don't plot generated images")
-    eval.add_argument('--prec-log', type=int, default=None if single_task else 500, metavar="N",
-                      help="# iters after which to plot precision")
-    eval.add_argument('--prec-n', type=int, default=1024, help="# samples for evaluating accuracy (visdom-plots)")
+    eval.add_argument('--acc-log', type=int, default=None if single_task else 500, metavar="N",
+                      help="# iters after which to plot accuracy")
+    eval.add_argument('--acc-n', type=int, default=1024, help="# samples for evaluating accuracy (visdom-plots)")
     return parser
 
 
@@ -274,7 +274,7 @@ def set_defaults(args, set_hyper_params=True, single_task=False, no_boundaries=F
         args.rl = args.depth-1 if args.rl is None else args.rl
     # -if [log_per_task], reset all logs
     if checkattr(args, 'log_per_task'):
-        args.prec_log = args.iters
+        args.acc_log = args.iters
         args.loss_log = args.iters
     return args
 

@@ -99,8 +99,8 @@ class FeatureExtractor(torch.nn.Module):
                 # Calculate loss
                 loss = F.cross_entropy(input=y_hat, target=y, reduction='mean')
 
-                # Calculate training-precision
-                precision = None if y is None else (y == y_hat.max(1)[1]).sum().item() / data.size(0)
+                # Calculate training-accuracy
+                accuracy = None if y is None else (y == y_hat.max(1)[1]).sum().item() / data.size(0)
 
                 # Backpropagate errors
                 loss.backward()
@@ -110,8 +110,8 @@ class FeatureExtractor(torch.nn.Module):
 
                 # Update progress bar
                 bar.set_description(
-                    ' <FEAUTRE EXTRACTOR> | training loss: {loss:.3} | training precision: {prec:.3} |'.format(
-                        loss=loss.cpu().item(), prec=precision
+                    ' <FEAUTRE EXTRACTOR> | training loss: {loss:.3} | training accuracy: {acc:.3} |'.format(
+                        loss=loss.cpu().item(), acc=accuracy
                     )
                 )
                 bar.update(1)
