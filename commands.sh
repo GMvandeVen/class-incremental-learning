@@ -24,7 +24,7 @@
 # Run all methods compared against (--> rest of Table 2)
 ./compare_all.py --experiment=MNIST --n-seeds=10 --seed=11 --c=1000 --lambda=1000000. --omega-max=0.01 --ar1-c=10
 ./compare_all.py --experiment=CIFAR10 --tasks=5 --n-seeds=10 --seed=11 --c=1 --lambda=10 --omega-max=0.1 --ar1-c=100 --conv-type=resNet --fc-layers=1 --iters=5000 --reducing-layers=3 --depth=5 --global-pooling --channels=20 --lr=0.001 --deconv-type=resNet --z-dim=100
-./compare_all.py --experiment=CIFAR100 --pre-convE --hidden --iters=5000 --n-seeds=10 --seed=11 --c=1. --lambda=100. --omega-max=0.01 --ar1-c=100 --dg-prop=0.7 --bir-c=0.6 --si-dg-prop=100000000
+./compare_all.py --experiment=CIFAR100 --pre-convE --hidden --iters=5000 --n-seeds=10 --seed=11 --c=1. --lambda=100. --omega-max=0.01 --ar1-c=100 --dg-prop=0.7 --bir-c=100000000 --si-dg-prop=0.6
 ./compare_all.py --experiment=CIFAR100 --pre-convE --iters=5000 --n-seeds=10 --seed=11 --c=1. --lambda=100. --omega-max=10. --ar1-c=100 --no-bir
 ./compare_all.py --experiment=CORe50 --n-seeds=10 --seed=11 --single-epochs --batch=1 --fc-layers=2 --z-dim=200 --fc-units=1024 --lr=0.0001 --c=10 --lambda=10 --omega-max=0.1 --ar1-c=1. --dg-prop=0. --bir-c=0.01 --si-dg-prop=0.6
 
