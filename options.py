@@ -1,6 +1,10 @@
 import argparse
 from utils import checkattr
 
+##-------------------------------------------------------------------------------------------------------------------##
+
+# Where to store the data / results / models / plots
+store = "./store"
 
 ##-------------------------------------------------------------------------------------------------------------------##
 
@@ -25,11 +29,14 @@ def add_general_options(parser, single_task=False, only_fc=True, **kwargs):
         parser.add_argument('--get-stamp', action='store_true', help='print param-stamp & exit')
     parser.add_argument('--seed', type=int, default=0, help='random seed (for each random-module used)')
     parser.add_argument('--no-gpus', action='store_false', dest='cuda', help="don't use GPUs")
-    parser.add_argument('--data-dir', type=str, default='./store/datasets', dest='d_dir', help="default: %(default)s")
-    parser.add_argument('--model-dir', type=str, default='./store/models', dest='m_dir', help="default: %(default)s")
+    parser.add_argument('--data-dir', type=str, default='{}/datasets'.format(store), dest='d_dir',
+                        help="default: %(default)s")
+    parser.add_argument('--model-dir', type=str, default='{}/models'.format(store), dest='m_dir',
+                        help="default: %(default)s")
     if not single_task:
-        parser.add_argument('--plot-dir', type=str, default='./store/plots', dest='p_dir', help="default: %(default)s")
-        parser.add_argument('--results-dir', type=str, default='./store/results', dest='r_dir',
+        parser.add_argument('--plot-dir', type=str, default='{}/plots'.format(store), dest='p_dir',
+                            help="default: %(default)s")
+        parser.add_argument('--results-dir', type=str, default='{}/results'.format(store), dest='r_dir',
                             help="default: %(default)s")
     return parser
 

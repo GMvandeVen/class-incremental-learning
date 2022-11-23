@@ -15,6 +15,12 @@ from torchvision.models import resnet18
 
 ## NOTE: The loading of the COR50e-dataset is based on: https://github.com/Continvvm/continuum (retrieved 18 Dec 2020)
 
+##-------------------------------------------------------------------------------------------------------------------##
+
+# Where to store the data / results / models / plots
+store = "./store"
+
+##-------------------------------------------------------------------------------------------------------------------##
 
 ####################################################################################################################
 
@@ -118,14 +124,15 @@ def handle_inputs():
     filename = 'preprocess_core50.py'
     description = 'Download and preprocess (with ResNet18 pretrained on ImageNet) the CORe50 dataset.'
     parser = argparse.ArgumentParser('./{}.py'.format(filename), description=description)
-    parser.add_argument('--data-dir', type=str, default='./store/datasets', dest='d_dir', help="default: %(default)s")
+    parser.add_argument('--data-dir', type=str, default='{}/datasets'.format(store),
+                        dest='d_dir', help="default: %(default)s")
     parser.add_argument('--batch', type=int, default=512, help="batch-size for pre-processing")
     args = parser.parse_args()
     return args
 
 
 ## Function for downloading and pre-processing the CORe50 dataset
-def download_and_preprocess(data_dir='./store/datasets', batch_size=512):
+def download_and_preprocess(data_dir='{}/datasets'.format(store), batch_size=512):
 
     # Create folders, if necessary
     if not os.path.isdir(data_dir):

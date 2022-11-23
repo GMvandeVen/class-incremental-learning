@@ -154,6 +154,7 @@ if __name__ == '__main__':
     AR1 = {}
     AR1 = collect_all(AR1, seed_list, args, name="AR1")
     args.cwr = False
+    args.cwr_plus = False
     args.si = False
     args.reg_only_hidden = False
 
