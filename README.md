@@ -38,7 +38,7 @@ The script `commands.sh` provides step-by-step instructions for re-running the e
 Although it is possible to run this script as is, it will take long and it might be sensible to use fewer random seeds
 or to parallellize the experiments.
 
-**NOTE: there is [an issue](https://github.com/GMvandeVen/class-incremental-learning/issues/1) with the implementation of BI-R in this repository. I am trying to figure out what is wrong. For now, please instead use [this repository](https://github.com/GMvandeVen/brain-inspired-replay) or [this repository](https://github.com/GMvandeVen/continual-learning) to run BI-R. Apologies!**
+**NOTE: there is [an issue](https://github.com/GMvandeVen/class-incremental-learning/issues/1) with the implementation of BI-R in this repository. I am trying to figure out what is wrong. For now, the BI-R and BI-R+SI results on Split CIFAR-100 can be reproduced using [this repository](https://github.com/GMvandeVen/brain-inspired-replay). Apologies!**
 
 
 ## Running custom experiments
