@@ -38,6 +38,8 @@ The script `commands.sh` provides step-by-step instructions for re-running the e
 Although it is possible to run this script as is, it will take long and it might be sensible to use fewer random seeds
 or to parallellize the experiments.
 
+**NOTE: there seems to be an issue with the implementation of BI-R in this repository. I am trying to figure out what is wrong. For now, please instead use [this repository](https://github.com/GMvandeVen/brain-inspired-replay) or [this repository](https://github.com/GMvandeVen/continual-learning) to run BI-R. Apologies!**
+
 
 ## Running custom experiments
 With this code it is also possible to run custom class-incremental learning experiments.
@@ -64,7 +66,7 @@ To run specific methods, the following can be used:
 - Synaptic intelligenc (SI): `./main_cl.py --si --c=0.1`
 - Elastic weight consolidation (EWC): `./main_cl.py --ewc --lambda=5000`
 - Deep Generative Replay (DGR): `./main_cl.py --replay=generative`
-- Brain-Inspired Replay (BI-R): `./main_cl.py --replay=generative --brain-inspired`
+- Brain-Inspired Replay (BI-R): `./main_cl.py --replay=generative --brain-inspired` (there seems to be an issue with the implementation of BI-R in this repository; please instead use [this repository](https://github.com/GMvandeVen/brain-inspired-replay) or [this repository](https://github.com/GMvandeVen/continual-learning) to run BI-R)
 - CopyWeights with Re-init (CWR): `./main_cl.py --cwr --freeze-after-first --freeze-fcE --freeze-convE`
 - CWR+: `./main_cl.py --cwr-plus --freeze-after-first --freeze-fcE --freeze-convE`
 - AR1: `./main_cl.py --cwr-plus --si --reg-only-hidden --c=0.1 --omega-max=0.1`
